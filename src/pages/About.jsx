@@ -29,6 +29,158 @@ function About() {
 
           <section className="about-section">
             <div className="about-card">
+              <h2 className="section-title">Jenis Glioma yang Diklasifikasikan</h2>
+              <div className="glioma-types">
+                <div className="glioma-type-item" style={{ 
+                  marginBottom: '2rem',
+                  padding: '1.5rem',
+                  backgroundColor: '#f0f9ff',
+                  borderRadius: '12px',
+                  border: '2px solid #bae6fd'
+                }}>
+                  <h3 style={{ 
+                    fontSize: '1.5rem', 
+                    fontWeight: '700', 
+                    color: '#0369a1',
+                    marginBottom: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}>
+                    <span>🔴</span> GBM (Glioblastoma Multiforme)
+                  </h3>
+                  <p style={{ 
+                    fontSize: '1rem', 
+                    lineHeight: '1.7', 
+                    color: '#1e293b',
+                    marginBottom: '1rem'
+                  }}>
+                    <strong>GBM (Glioblastoma Multiforme)</strong> adalah jenis tumor otak ganas (high-grade glioma) 
+                    yang paling agresif dan umum terjadi pada orang dewasa. GBM termasuk dalam grade IV menurut 
+                    klasifikasi WHO dan merupakan jenis glioma dengan prognosis terburuk.
+                  </p>
+                  <div style={{ 
+                    backgroundColor: '#ffffff',
+                    padding: '1rem',
+                    borderRadius: '8px',
+                    marginTop: '1rem'
+                  }}>
+                    <h4 style={{ 
+                      fontSize: '1.1rem', 
+                      fontWeight: '600', 
+                      color: '#0369a1',
+                      marginBottom: '0.75rem'
+                    }}>
+                      Karakteristik GBM:
+                    </h4>
+                    <ul style={{ 
+                      listStyle: 'none', 
+                      padding: 0,
+                      margin: 0
+                    }}>
+                      <li style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        <strong>Tingkat keganasan:</strong> Sangat tinggi (Grade IV)
+                      </li>
+                      <li style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        <strong>Pertumbuhan:</strong> Sangat cepat dan invasif
+                      </li>
+                      <li style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        <strong>Prognosis:</strong> Umumnya buruk, dengan survival rate rendah
+                      </li>
+                      <li style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        <strong>Mutasi umum:</strong> EGFR, PTEN, TP53, sering tanpa mutasi IDH1/IDH2
+                      </li>
+                      <li style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        <strong>Pengobatan:</strong> Operasi, radioterapi, dan kemoterapi (Temozolomide)
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="glioma-type-item" style={{ 
+                  padding: '1.5rem',
+                  backgroundColor: '#f0fdf4',
+                  borderRadius: '12px',
+                  border: '2px solid #86efac'
+                }}>
+                  <h3 style={{ 
+                    fontSize: '1.5rem', 
+                    fontWeight: '700', 
+                    color: '#166534',
+                    marginBottom: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem'
+                  }}>
+                    <span>🟢</span> LGG (Low Grade Glioma)
+                  </h3>
+                  <p style={{ 
+                    fontSize: '1rem', 
+                    lineHeight: '1.7', 
+                    color: '#1e293b',
+                    marginBottom: '1rem'
+                  }}>
+                    <strong>LGG (Low Grade Glioma)</strong> adalah jenis tumor otak dengan tingkat keganasan rendah 
+                    (grade I-II menurut klasifikasi WHO). LGG tumbuh lebih lambat dibandingkan GBM dan memiliki 
+                    prognosis yang lebih baik, terutama pada pasien dengan mutasi IDH1/IDH2.
+                  </p>
+                  <div style={{ 
+                    backgroundColor: '#ffffff',
+                    padding: '1rem',
+                    borderRadius: '8px',
+                    marginTop: '1rem'
+                  }}>
+                    <h4 style={{ 
+                      fontSize: '1.1rem', 
+                      fontWeight: '600', 
+                      color: '#166534',
+                      marginBottom: '0.75rem'
+                    }}>
+                      Karakteristik LGG:
+                    </h4>
+                    <ul style={{ 
+                      listStyle: 'none', 
+                      padding: 0,
+                      margin: 0
+                    }}>
+                      <li style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        <strong>Tingkat keganasan:</strong> Rendah hingga sedang (Grade I-II)
+                      </li>
+                      <li style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        <strong>Pertumbuhan:</strong> Lambat dan kurang invasif
+                      </li>
+                      <li style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        <strong>Prognosis:</strong> Lebih baik, dengan survival rate yang lebih tinggi
+                      </li>
+                      <li style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        <strong>Mutasi umum:</strong> IDH1/IDH2, ATRX, TP53, CIC, FUBP1 (pada oligodendroglioma)
+                      </li>
+                      <li style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        <strong>Jenis LGG:</strong> Astrocytoma, Oligodendroglioma, Oligoastrocytoma
+                      </li>
+                      <li style={{ marginBottom: '0.5rem', paddingLeft: '1.5rem', position: 'relative' }}>
+                        <span style={{ position: 'absolute', left: 0 }}>•</span>
+                        <strong>Pengobatan:</strong> Operasi, observasi, atau radioterapi tergantung kondisi
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="about-section">
+            <div className="about-card">
               <h2 className="section-title">Teknologi</h2>
               <div className="tech-list">
                 <div className="tech-item">

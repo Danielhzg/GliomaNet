@@ -15,20 +15,37 @@ function Classify() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
-  // Daftar field rekomendasi - SESUAI DENGAN FORMAT TRAINING DATA
-  // PENTING: Format harus EXACT match dengan training data (cat_levels dari feature_stats.json)
-  // Note: IDH1, ATRX, TP53, dll di training adalah "MUTATED"/"NOT_MUTATED" tapi di-encode jadi 0/1 numeric
+
   const PREFERRED_FIELDS = [
+    // Field Demografis & Klinis
     { name: "Age_at_diagnosis", label: "Usia saat diagnosis", type: "age_cat", placeholder: "Pilih usia" }, // Categorical dengan format "X years Y days"
     { name: "Gender", label: "Jenis Kelamin", type: "cat", options: ["Male", "Female", "--"] }, // Exact match dengan cat_levels
     { name: "Primary_Diagnosis", label: "Diagnosis Primer", type: "cat", options: ["Glioblastoma", "Astrocytoma, anaplastic", "Mixed glioma", "Oligodendroglioma, NOS", "Oligodendroglioma, anaplastic", "Astrocytoma, NOS", "--"] }, // WAJIB - ada di training
     { name: "Race", label: "Ras/Etnis", type: "cat", options: ["white", "black or african american", "asian", "not reported", "--"] }, // Exact match dengan cat_levels
+    
+    // Field Mutasi Utama (High Priority)
     { name: "IDH1", label: "Status Mutasi IDH1", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
-    { name: "ATRX", label: "Status Mutasi ATRX", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
     { name: "TP53", label: "Status Mutasi TP53", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
-    { name: "EGFR", label: "Status Mutasi EGFR", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "ATRX", label: "Status Mutasi ATRX", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
     { name: "PTEN", label: "Status Mutasi PTEN", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "EGFR", label: "Status Mutasi EGFR", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
     { name: "PDGFRA", label: "Status Mutasi PDGFRA", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    
+    // Field Mutasi Tambahan (Important for Accuracy)
+    { name: "CIC", label: "Status Mutasi CIC", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "MUC16", label: "Status Mutasi MUC16", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "PIK3CA", label: "Status Mutasi PIK3CA", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "NF1", label: "Status Mutasi NF1", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "PIK3R1", label: "Status Mutasi PIK3R1", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "FUBP1", label: "Status Mutasi FUBP1", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "RB1", label: "Status Mutasi RB1", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "NOTCH1", label: "Status Mutasi NOTCH1", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "BCOR", label: "Status Mutasi BCOR", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "CSMD3", label: "Status Mutasi CSMD3", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "SMARCA4", label: "Status Mutasi SMARCA4", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "GRIN2A", label: "Status Mutasi GRIN2A", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "IDH2", label: "Status Mutasi IDH2", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
+    { name: "FAT4", label: "Status Mutasi FAT4", type: "binary", options: ["Tidak Bermutasi (0)", "Bermutasi (1)"], values: [0, 1] },
   ];
 
   // Ambil meta saat mount dan gabungkan dengan PREFERRED_FIELDS
@@ -216,43 +233,64 @@ function Classify() {
       // Debug: log response untuk memastikan probability ada
       console.log("Backend response:", resp);
       
-      // Pastikan probability valid (bukan 0, null, atau undefined)
-      let probability = resp.probability;
+      // Gunakan confidence dari backend (probabilitas kelas yang diprediksi)
+      // Backend sudah menghitung confidence dengan benar:
+      // - Jika prediksi LGG, confidence = probabilitas LGG
+      // - Jika prediksi GBM, confidence = probabilitas GBM
+      let confidence = resp.confidence;
       
-      // Jika probability tidak ada, coba ambil dari prob_gbm
-      if (probability === undefined || probability === null) {
-        probability = resp.prob_gbm;
+      // Fallback jika confidence tidak ada
+      if (confidence === undefined || confidence === null || isNaN(confidence)) {
+        // Gunakan probabilitas dari kelas yang diprediksi
+        if (resp.label === "LGG" && resp.prob_lgg !== undefined) {
+          confidence = resp.prob_lgg;
+        } else if (resp.label === "GBM" && resp.prob_gbm !== undefined) {
+          confidence = resp.prob_gbm;
+        } else {
+          // Fallback terakhir: gunakan prob_gbm atau 0.5
+          confidence = resp.prob_gbm !== undefined ? resp.prob_gbm : 0.5;
+        }
       }
       
-      // Jika masih tidak ada, gunakan 0.5 sebagai default (50%)
-      if (probability === undefined || probability === null || isNaN(probability)) {
-        console.warn("Warning: Probability tidak valid, menggunakan default 0.5");
-        probability = 0.5;
-      }
+      // Clamp confidence antara 0-1
+      confidence = Math.max(0, Math.min(1, parseFloat(confidence)));
       
-      // Clamp probability antara 0-1
-      probability = Math.max(0, Math.min(1, parseFloat(probability)));
+      // Ambil probabilitas untuk kedua kelas
+      const probGBM = resp.prob_gbm !== undefined ? parseFloat(resp.prob_gbm) : (1 - confidence);
+      const probLGG = resp.prob_lgg !== undefined ? parseFloat(resp.prob_lgg) : confidence;
       
-      // Jika probability sangat kecil (< 0.01), mungkin ada masalah dengan model
-      if (probability < 0.01 && resp.label) {
-        console.warn("Warning: Probability sangat kecil (< 1%), mungkin ada masalah dengan input data atau model");
+      // Normalize probabilities
+      const totalProb = probGBM + probLGG;
+      const normalizedProbGBM = totalProb > 0 ? probGBM / totalProb : 0.5;
+      const normalizedProbLGG = totalProb > 0 ? probLGG / totalProb : 0.5;
+      
+      // Jika confidence sangat kecil (< 0.01), mungkin ada masalah dengan model
+      if (confidence < 0.01 && resp.label) {
+        console.warn("Warning: Confidence sangat rendah (< 1%), mungkin ada masalah dengan input data atau model");
       }
       
       // Adaptasi ke struktur ResultDisplay
       const adapted = {
         prediction: resp.label || "LGG", // 'GBM' | 'LGG'
-        confidence: probability, // Sudah di-clamp 0-1
+        confidence: confidence, // Confidence = probabilitas kelas yang diprediksi
         probabilities: {
-          GBM: probability,
-          LGG: 1 - probability,
+          GBM: normalizedProbGBM,
+          LGG: normalizedProbLGG,
         },
         processingTime: undefined,
         model: selectedModel,
-        threshold: resp.threshold || 0.05,
+        threshold: resp.threshold || 0.5,
+        warning: resp.warning || null, // Warning dari backend tentang default fields
+        defaultFieldsCount: resp.default_fields_count || 0,
+        totalFields: resp.total_fields || 24,
+        defaultFields: resp.default_fields || [],
       };
       
       console.log("Adapted result:", adapted);
-      console.log("Confidence (Akurasi):", (probability * 100).toFixed(2) + "%");
+      console.log("Confidence (Akurasi):", (confidence * 100).toFixed(2) + "%");
+      if (adapted.warning) {
+        console.warn("⚠️ Warning:", adapted.warning);
+      }
       setResult(adapted);
       
       // Scroll ke hasil setelah render
@@ -308,13 +346,37 @@ function Classify() {
       <div className="classify-header">
         <h1 className="page-title">
           <img src="/certan.png" alt="Certan Icon" className="title-icon" />
-          Klasifikasi Glioma (Input Manual)
+          Klasifikasi Glioma 
         </h1>
         <p className="page-subtitle">
           Masukkan nilai fitur sesuai form di bawah untuk melakukan klasifikasi
-          menggunakan Ensemble Model (RF + MLP). Nilai kosong akan diisi default
-          dari statistik training.
+          menggunakan Ensemble Model (RF + MLP). 
+          <strong style={{ color: '#ef4444' }}> Untuk akurasi maksimal, mohon lengkapi semua field mutation.</strong>
+          Nilai kosong akan diisi default dari statistik training dan dapat mengurangi akurasi prediksi.
         </p>
+        <div style={{
+          marginTop: '1rem',
+          padding: '1rem',
+          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+          borderRadius: '12px',
+          border: '1px solid rgba(92, 184, 228, 0.3)',
+          fontSize: '0.9rem',
+          lineHeight: '1.6'
+        }}>
+          <div style={{ fontWeight: '600', marginBottom: '0.5rem', color: '#2c3e50' }}>
+            ℹ️ Informasi Klasifikasi:
+          </div>
+          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+            <div style={{ flex: '1', minWidth: '200px' }}>
+              <span style={{ fontWeight: '600', color: '#ef4444' }}>🔴 GBM:</span> Glioblastoma Multiforme (Grade IV) - 
+              Tumor ganas yang sangat agresif dengan prognosis buruk.
+            </div>
+            <div style={{ flex: '1', minWidth: '200px' }}>
+              <span style={{ fontWeight: '600', color: '#10b981' }}>🟢 LGG:</span> Low Grade Glioma (Grade I-II) - 
+              Tumor dengan keganasan rendah, tumbuh lambat, prognosis lebih baik.
+            </div>
+          </div>
+        </div>
         <div className="model-badge-header">
           <span className="badge-icon">⭐</span>
           <span>Ensemble Model - Akurasi Tinggi</span>

@@ -179,18 +179,30 @@ def predict():
     
     # Validasi: cek apakah banyak field yang menggunakan default
     default_count = 0
+    default_fields = []
     for col in df_in.columns:
         val = df_in[col].iloc[0]
+        is_default = False
         if col in CATS:
             if val == MODES.get(col, "MISSING"):
-                default_count += 1
+                is_default = True
         else:
             if abs(float(val) - MEANS.get(col, 0.0)) < 0.0001:
-                default_count += 1
+                is_default = True
+        
+        if is_default:
+            default_count += 1
+            default_fields.append(col)
     
+    # Warning jika banyak field menggunakan default
+    warning_message = None
     if default_count > len(df_in.columns) * 0.5:
-        print(f"[WARNING] {default_count}/{len(df_in.columns)} field menggunakan default value!")
-        print(f"[WARNING] Ini mungkin menyebabkan prediksi tidak akurat!")
+        warning_message = f"{default_count}/{len(df_in.columns)} field menggunakan default value! Ini mungkin menyebabkan prediksi tidak akurat."
+        print(f"[WARNING] {warning_message}")
+        print(f"[WARNING] Field yang menggunakan default: {', '.join(default_fields[:10])}{'...' if len(default_fields) > 10 else ''}")
+    elif default_count > 0:
+        warning_message = f"{default_count} field menggunakan default value. Untuk akurasi maksimal, mohon lengkapi semua field."
+        print(f"[INFO] {warning_message}")
 
     # prediksi probabilitas
     try:
@@ -198,28 +210,73 @@ def predict():
         print(f"[DEBUG] Raw probabilities shape: {proba.shape}")
         print(f"[DEBUG] Raw probabilities: {proba}")
         
-        # Ambil probabilitas kelas 1 (GBM)
+        # Ambil probabilitas untuk kedua kelas
         if proba.shape[1] > 1:
+            # proba format: [[prob_class_0, prob_class_1]]
+            # Class 0 = LGG, Class 1 = GBM
+            proba_lgg = proba[:, 0]
             proba_gbm = proba[:, 1]
         else:
             # Jika hanya 1 kelas, gunakan probabilitas kelas 0
-            proba_gbm = proba[:, 0]
+            proba_lgg = proba[:, 0]
+            proba_gbm = 1.0 - proba[:, 0]
         
-        proba_gbm = np.nan_to_num(proba_gbm, nan=0.5)  # Default 0.5 jika NaN
-        p = float(proba_gbm[0])
+        # Normalize dan handle NaN
+        proba_lgg = np.nan_to_num(proba_lgg, nan=0.5)
+        proba_gbm = np.nan_to_num(proba_gbm, nan=0.5)
         
-        print(f"[DEBUG] Probability GBM: {p}")
+        # Pastikan probabilitas valid dan normalized (jumlah = 1.0)
+        p_lgg = float(proba_lgg[0])
+        p_gbm = float(proba_gbm[0])
+        
+        # Normalize jika jumlah tidak tepat 1.0 (karena floating point)
+        total = p_lgg + p_gbm
+        if total > 0:
+            p_lgg = p_lgg / total
+            p_gbm = p_gbm / total
+        else:
+            # Fallback jika total = 0
+            p_lgg = 0.5
+            p_gbm = 0.5
+        
+        # Clamp values antara 0 dan 1
+        p_lgg = max(0.0, min(1.0, p_lgg))
+        p_gbm = max(0.0, min(1.0, p_gbm))
+        
+        print(f"[DEBUG] Probability LGG: {p_lgg:.6f}")
+        print(f"[DEBUG] Probability GBM: {p_gbm:.6f}")
         print(f"[DEBUG] Threshold: {THRESHOLD}")
         
         # Pastikan probability valid
-        if p < 0 or p > 1 or np.isnan(p):
-            print(f"[WARNING] Invalid probability: {p}, using default 0.5")
-            p = 0.5
+        if p_lgg < 0 or p_lgg > 1 or np.isnan(p_lgg) or p_gbm < 0 or p_gbm > 1 or np.isnan(p_gbm):
+            print(f"[WARNING] Invalid probability, using default 0.5")
+            p_lgg = 0.5
+            p_gbm = 0.5
         
-        pred = int(p >= THRESHOLD)
-        label = "GBM" if pred == 1 else "LGG"
+        # PREDIKSI: Gunakan probabilitas tertinggi (argmax)
+        # Jika probabilitas GBM lebih tinggi dari LGG, prediksi GBM
+        # Jika probabilitas LGG lebih tinggi dari GBM, prediksi LGG
+        # Threshold digunakan sebagai tie-breaker jika probabilitas sangat dekat
+        if p_gbm > p_lgg:
+            # Probabilitas GBM lebih tinggi → prediksi GBM
+            pred = 1
+            label = "GBM"
+            confidence = p_gbm
+        elif p_lgg > p_gbm:
+            # Probabilitas LGG lebih tinggi → prediksi LGG
+            pred = 0
+            label = "LGG"
+            confidence = p_lgg
+        else:
+            # Jika probabilitas sama (sangat jarang), gunakan threshold sebagai tie-breaker
+            # Threshold 0.5 berarti jika p_gbm >= 0.5, prediksi GBM
+            pred = int(p_gbm >= THRESHOLD)
+            label = "GBM" if pred == 1 else "LGG"
+            confidence = p_gbm if pred == 1 else p_lgg
+            print(f"[WARNING] Probabilitas sama atau sangat dekat, menggunakan threshold sebagai tie-breaker")
         
         print(f"[DEBUG] Prediction: {pred}, Label: {label}")
+        print(f"[DEBUG] Confidence: {confidence:.6f} (probabilitas {label})")
         
     except Exception as e:
         print(f"[ERROR] Prediction error: {str(e)}")
@@ -227,14 +284,25 @@ def predict():
         traceback.print_exc()
         return jsonify({"error": f"Error during prediction: {str(e)}"}), 500
 
-    return jsonify({
-        "probability": p,  # alias untuk prob_gbm
-        "prob_gbm": p,
+    response = {
+        "probability": p_gbm,  # probabilitas GBM (untuk backward compatibility)
+        "prob_gbm": p_gbm,  # probabilitas GBM
+        "prob_lgg": p_lgg,  # probabilitas LGG
+        "confidence": confidence,  # confidence = probabilitas kelas yang diprediksi
         "threshold": float(THRESHOLD),
         "prediction": pred,
         "pred_label": label,
-        "label": label  # alias untuk pred_label
-    })
+        "label": label,  # alias untuk pred_label
+        "default_fields_count": default_count,
+        "total_fields": len(df_in.columns),
+        "default_fields": default_fields[:20]  # Limit to first 20 untuk response size
+    }
+    
+    # Tambahkan warning jika ada
+    if warning_message:
+        response["warning"] = warning_message
+    
+    return jsonify(response)
 
 # =======================
 # MAIN

@@ -109,10 +109,17 @@ export async function predictManual(payload) {
   const data = await res.json();
   // Normalize response format
   return {
-    probability: data.probability || data.prob_gbm || 0,
+    probability: data.probability || data.prob_gbm || 0, // Untuk backward compatibility
+    prob_gbm: data.prob_gbm !== undefined ? data.prob_gbm : (data.probability || 0),
+    prob_lgg: data.prob_lgg !== undefined ? data.prob_lgg : (1 - (data.probability || 0)),
+    confidence: data.confidence !== undefined ? data.confidence : (data.probability || 0),
     threshold: data.threshold || 0,
     prediction: data.prediction || (data.pred_label === "GBM" ? 1 : 0),
-    label: data.label || data.pred_label || "LGG"
+    label: data.label || data.pred_label || "LGG",
+    warning: data.warning || null,
+    default_fields_count: data.default_fields_count || 0,
+    total_fields: data.total_fields || 24,
+    default_fields: data.default_fields || []
   };
 }
 
