@@ -1,0 +1,216 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Health & Calm Theme with professional colors */
+  --primary-color: #5cb8e4; /* Calming light blue */
+  --primary-dark: #3d9fcc; /* Deeper medical blue */
+  --primary-light: #e0f4ff; /* Very light blue */
+  --secondary-color: #a3e4b8; /* Fresh healing green */
+  --secondary-light: #d4f1e0; /* Light mint green */
+  --accent-color: #a3e4b8; /* Fresh green accent */
+  --accent-light: #e0f4f0; /* Very light green */
+  --danger-color: #e74c3c;
+  --success-color: #27ae60; /* Success green */
+  --warning-color: #f39c12; /* Amber */
+  --text-primary: #2c3e50; /* Rich dark slate */
+  --text-secondary: #7f8c8d; /* Medium gray */
+  --bg-primary: #e8f4f8; /* Soft blue background */
+  --bg-secondary: #d4e8f2; /* Light blue tint */
+  --bg-card: rgba(224, 244, 255, 0.98);
+  --border-color: #e8e8e8; /* Light gray border */
+
+  /* Shadows with medical theme colors */
+  --shadow: 0 8px 24px rgba(92, 184, 228, 0.08);
+  --shadow-lg: 0 20px 40px rgba(92, 184, 228, 0.1);
+  --shadow-xl: 0 30px 60px rgba(92, 184, 228, 0.12);
+  --shadow-soft: 0 4px 16px rgba(92, 184, 228, 0.04);
+  --shadow-subtle: 0 8px 20px rgba(92, 184, 228, 0.06);
+
+  /* Health & Calm gradients */
+  --gradient-primary: linear-gradient(135deg, #e0f4ff 0%, #5cb8e4 100%);
+  --gradient-accent: linear-gradient(135deg, #d4f1e0 0%, #a3e4b8 100%);
+  --gradient-healing: linear-gradient(135deg, #a3e4b8 0%, #7cc894 100%);
+  --gradient-medical: linear-gradient(135deg, #5cb8e4 0%, #3d9fcc 100%);
+  --gradient-warm: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(
+    135deg,
+    #e0f4ff 0%,
+    #d4e8f2 35%,
+    #c0e0ed 70%,
+    #e0f4ff 100%
+  );
+  min-height: 100vh;
+  color: var(--text-primary);
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  /* Health & Calm theme ambient pattern with blue background */
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+      circle at 20% 50%,
+      rgba(92, 184, 228, 0.08) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(163, 228, 184, 0.06) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 85%,
+      rgba(61, 159, 204, 0.05) 0%,
+      transparent 45%
+    ),
+    linear-gradient(
+      120deg,
+      rgba(80, 168, 215, 0.15) 0%,
+      rgba(124, 200, 148, 0.12) 50%,
+      rgba(92, 184, 228, 0.1) 100%
+    );
+  animation: floatBackground 25s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 1;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes floatBackground {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(30px, -30px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+}
+
+#root {
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* Accessibility / reduced-glare overrides: prefer dark text on light cards, softer glows */
+.card,
+.feature-card,
+.feature-card-large,
+.model-card,
+.about-card,
+.result-main,
+.probabilities,
+.cta-content,
+.tech-card,
+.goal-item,
+.workflow-step {
+  color: var(--card-text) !important;
+}
+
+/* Reduce text glows and harsh white text-shadows used previously */
+.app-title,
+.page-title,
+.result-title,
+.card-title,
+.hero-title,
+.prediction-value {
+  text-shadow: none !important;
+  -webkit-text-fill-color: initial !important;
+  background: none !important;
+  color: var(--text-primary) !important;
+}
+
+/* Make shadows and glows subtler */
+.card,
+.feature-card,
+.model-card,
+.about-card,
+.result-main {
+  box-shadow: var(--shadow-lg) !important;
+  border: 1px solid var(--border-color) !important;
+  background: var(--bg-card) !important;
+  transition: all 0.3s ease !important;
+}
+
+.card:hover,
+.feature-card:hover,
+.model-card:hover,
+.about-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+/* Buttons: softer hover glows */
+.btn-primary,
+.btn-cta,
+.btn-primary-hero {
+  box-shadow: 0 8px 30px rgba(92, 184, 228, 0.15) !important;
+  background: var(--gradient-medical) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.btn-primary:hover,
+.btn-cta:hover,
+.btn-primary-hero:hover {
+  box-shadow: 0 12px 40px rgba(92, 184, 228, 0.25) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Reduce intense svg white glows */
+svg {
+  filter: none !important;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #5cb8e4 0%, #a3e4b8 50%, #3d9fcc 100%);
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #a3e4b8 0%, #5cb8e4 50%, #7cc894 100%);
+}

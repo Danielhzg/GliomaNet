@@ -1,0 +1,314 @@
+.result-display {
+  width: 100%;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 2rem;
+  text-align: center;
+  text-shadow: 0 1px 6px rgba(2, 6, 23, 0.06);
+  letter-spacing: -0.5px;
+}
+
+.result-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.result-main {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.06) 0%,
+    rgba(59, 130, 246, 0.03) 100%
+  );
+  backdrop-filter: blur(18px);
+  padding: 2.5rem;
+  border-radius: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 20px 60px rgba(2, 6, 23, 0.06),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.result-main::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
+  animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.prediction-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.label-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.prediction-value {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 6px rgba(2, 6, 23, 0.06);
+}
+
+/* removed strong white glow animation for accessibility */
+
+.confidence-bar-container {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.confidence-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.confidence-value {
+  font-weight: 800;
+  font-size: 1.5rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.confidence-bar {
+  width: 100%;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.confidence-fill {
+  height: 100%;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    currentColor 0%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  box-shadow: 0 0 20px currentColor;
+  position: relative;
+  overflow: hidden;
+}
+
+.confidence-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.probabilities {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  padding: 2rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.probabilities-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.probability-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.probability-item {
+  width: 100%;
+  animation: slideIn 0.5s ease-out backwards;
+}
+
+.probability-item:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.probability-item:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.probability-item:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.probability-item:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.probability-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.probability-class {
+  color: #2c3e50;
+  font-weight: 600;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.probability-percent {
+  color: #475569;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.probability-bar {
+  width: 100%;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.probability-fill {
+  height: 100%;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    currentColor 0%,
+    rgba(255, 255, 255, 0.6) 100%
+  );
+  box-shadow: 0 0 15px currentColor;
+  position: relative;
+}
+
+.model-info {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.model-badge,
+.time-badge {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s;
+}
+
+.model-badge:hover,
+.time-badge:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.premium-indicator {
+  font-size: 1.2rem;
+  animation: rotateStar 2s linear infinite;
+}
+
+@keyframes rotateStar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
